@@ -4,12 +4,12 @@
 
 struct ponto{
     char* nome;
-    double X;
-    double Y;
+    long double X;
+    long double Y;
     int index;
 };
 
-Ponto* criaPonto (char* nome, float X, float Y, int index){
+Ponto* criaPonto (char* nome, long double X, long double Y, int index){
     Ponto* ponto = malloc(sizeof(Ponto));
     ponto -> nome = strdup(nome);
     ponto -> X = X;
@@ -22,11 +22,11 @@ char* retornaNome (Ponto* ponto){
     return ponto -> nome;
 }
 
-double retornaX (Ponto* ponto){
+long double retornaX (Ponto* ponto){
     return ponto -> X;
 }
 
-double retornaY (Ponto* ponto){
+long double retornaY (Ponto* ponto){
     return ponto -> Y;
 }
 

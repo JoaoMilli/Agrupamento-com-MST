@@ -15,7 +15,7 @@ Ponto** leEntrada(int* count){
     char* linha = malloc(sizeof(char)*buffer);
     char* token;
     char* nome;
-    double X, Y;
+    long double X, Y;
 
     /*Conta o numero de linhas contidas no arquivo de entrada, necessario para alocacao de espaco para o vetor contendo os ponteiros do tipo ponto*/
     while (getline (&linha, &buffer, file) != -1) (*count)++; 
@@ -55,7 +55,7 @@ int main(){
     *count = 0;
     Ponto** vetorPonto = leEntrada(count);
     for(int i = 0; i < *count; i++){
-        printf("%s, %f, %f, %d\n", retornaNome(vetorPonto[i]), retornaX(vetorPonto[i]), retornaY(vetorPonto[i]), retornaIndex(vetorPonto[i]));
+        printf("%s, %Lf, %Lf, %d\n", retornaNome(vetorPonto[i]), retornaX(vetorPonto[i]), retornaY(vetorPonto[i]), retornaIndex(vetorPonto[i]));
     }
     free(count);
     return 0;
