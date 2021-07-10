@@ -6,13 +6,15 @@ struct ponto{
     char* nome;
     double X;
     double Y;
+    int index;
 };
 
-Ponto* criaPonto (char* nome, float X, float Y){
+Ponto* criaPonto (char* nome, float X, float Y, int index){
     Ponto* ponto = malloc(sizeof(Ponto));
     ponto -> nome = strdup(nome);
     ponto -> X = X;
     ponto -> Y = Y;
+    ponto -> index = index;
     return ponto;
 }
 
@@ -26,6 +28,10 @@ double retornaX (Ponto* ponto){
 
 double retornaY (Ponto* ponto){
     return ponto -> Y;
+}
+
+int retornaIndex(Ponto* ponto){
+    return ponto -> index;
 }
 
 void destroiPonto (Ponto* ponto){

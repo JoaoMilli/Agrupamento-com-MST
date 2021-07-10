@@ -40,7 +40,7 @@ Ponto** leEntrada(int* count){
         token = strtok(NULL, ",\n");
         Y = atof(token);
 
-        ponto[i] = criaPonto(nome, X, Y);
+        ponto[i] = criaPonto(nome, X, Y, i);
     }
 
     free(linha);
@@ -55,7 +55,7 @@ int main(){
     *count = 0;
     Ponto** vetorPonto = leEntrada(count);
     for(int i = 0; i < *count; i++){
-        printf("%s, %f, %f\n", retornaNome(vetorPonto[i]), retornaX(vetorPonto[i]), retornaY(vetorPonto[i]));
+        printf("%s, %f, %f, %d\n", retornaNome(vetorPonto[i]), retornaX(vetorPonto[i]), retornaY(vetorPonto[i]), retornaIndex(vetorPonto[i]));
     }
     free(count);
     return 0;
