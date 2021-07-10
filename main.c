@@ -3,28 +3,34 @@
 #include <stdlib.h>
 #include <string.h>
 
-Ponto** leEntrada(){
-    FILE* file = fopen("entrada.txt", "r");
-    if (file == NULL) return NULL;
+Ponto** leEntrada(int* count){
 
-    int count = 0;
-    size_t buffer = 100;
+    FILE* file = fopen("entrada.txt", "r");
+    if (file == NULL){
+        printf("Arquivo de entrada não encontrado\n");
+        return NULL;
+    }
+
+    size_t buffer = 100; //unsigned int contendo o tamanho da string que recebera as linhas da entrada (tipo padrao do getiline)
     char* linha = malloc(sizeof(char)*buffer);
     char* token;
     char* nome;
     double X, Y;
 
+    /*Conta o numero de linhas contidas no arquivo de entrada, necessario para alocacao de espaco para o vetor contendo os ponteiros do tipo ponto*/
+    while (getline (&linha, &buffer, file) != -1) (*count)++; 
 
-    while (getline (&linha, &buffer, file) != -1) count++; 
+    Ponto** ponto = malloc(sizeof(Ponto*) * (*count));
 
-    Ponto** ponto = malloc(sizeof(Ponto*)*(count+1));
-
+    /*Reseta o ponteiro de leitura para o incio do arquivo de entrada, para agora obter os dados*/
     fseek(file, 0, SEEK_SET);
 
-    for (int i = 0; i < count; i++){
+    for (int i = 0; i < *count; i++){
 
         getline (&linha, &buffer, file);
-        token = strtok(linha, ",");
+
+        /*Obtem-se cada elemento que eh separado por virgula*/
+        token = strtok(linha, ",");       
 
         nome = strdup(token);
 
@@ -37,8 +43,6 @@ Ponto** leEntrada(){
         ponto[i] = criaPonto(nome, X, Y);
     }
 
-    ponto[count] == NULL;
-
     free(linha);
     
     return ponto;
@@ -47,10 +51,12 @@ Ponto** leEntrada(){
 
 int main(){
 
-    Ponto** vetorPonto = leEntrada();
-    int i = 0;
-    while (vetorPonto[i] != NULL){
-        i++;
+    int* count = malloc(sizeof(int));
+    *count = 0;
+    Ponto** vetorPonto = leEntrada(count);
+    for(int i = 0; i < *count; i++){
+        printf("%s, %f, %f\n", retornaNome(vetorPonto[i]), retornaX(vetorPonto[i]), retornaY(vetorPonto[i]));
     }
+    free(count);
     return 0;
 }
