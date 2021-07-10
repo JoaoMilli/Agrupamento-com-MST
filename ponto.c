@@ -1,6 +1,7 @@
 #include "ponto.h"
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 struct ponto{
     char* nome;
@@ -32,6 +33,10 @@ long double retornaY (Ponto* ponto){
 
 int retornaIndex(Ponto* ponto){
     return ponto -> index;
+}
+
+long double distanciaEuclidiana(Ponto* p1, Ponto* p2){
+    return sqrt(pow(retornaX(p2) - retornaX(p1),2) + pow(retornaY(p2) - retornaY(p1),2));
 }
 
 void destroiPonto (Ponto* ponto){

@@ -54,8 +54,10 @@ int main(){
     int* count = malloc(sizeof(int));
     *count = 0;
     Ponto** vetorPonto = leEntrada(count);
+    printf("Distancia entre os dois primeiros pontos eh: %Lf\n\n", distanciaEuclidiana(vetorPonto[1], vetorPonto[0]));
     for(int i = 0; i < *count; i++){
         printf("%s, %Lf, %Lf, %d\n", retornaNome(vetorPonto[i]), retornaX(vetorPonto[i]), retornaY(vetorPonto[i]), retornaIndex(vetorPonto[i]));
+        destroiPonto (vetorPonto[i]);
     }
     free(count);
     return 0;

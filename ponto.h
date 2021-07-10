@@ -8,6 +8,7 @@ char* retornaNome (Ponto* ponto);
 long double retornaX (Ponto* ponto);
 long double retornaY (Ponto* ponto);
 int retornaIndex(Ponto* ponto);
+long double distanciaEuclidiana(Ponto* p1, Ponto* p2);
 void destroiPonto (Ponto* ponto);
 
 
