@@ -10,7 +10,7 @@ typedef struct arestas Arestas;
 * Saídas: Um ponteiro para o TAD criado, com o tamanho de todas as arestas já calculado
 * Pós-condições: É alocado na memória o TAD Arestas e todas as informações sobre as arestas
 */
-Arestas* criaArestas(Ponto** pontos);
+Arestas* criaArestas(Ponto** pontos, int numPontos);
 
 
 /* Remove a menor aresta ainda presente em "arestas"

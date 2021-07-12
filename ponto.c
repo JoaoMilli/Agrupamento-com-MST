@@ -40,6 +40,10 @@ long double distanciaEuclidiana(Ponto* p1, Ponto* p2){
 }
 
 void destroiPonto (Ponto* ponto){
-    free(ponto -> nome);
-    free(ponto);
+    if(ponto){
+        if(ponto->nome){
+            free(ponto -> nome);
+        }
+        free(ponto);
+    }
 }

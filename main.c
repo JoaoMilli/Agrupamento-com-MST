@@ -13,8 +13,8 @@ Ponto** leEntrada(int* count){
 
     size_t buffer = 100; //unsigned int contendo o tamanho da string que recebera as linhas da entrada (tipo padrao do getiline)
     char* linha = malloc(sizeof(char)*buffer);
-    char* token;
-    char* nome;
+    char* token = NULL;
+    char* nome = NULL;
     long double X, Y;
 
     /*Conta o numero de linhas contidas no arquivo de entrada, necessario para alocacao de espaco para o vetor contendo os ponteiros do tipo ponto*/
@@ -41,9 +41,11 @@ Ponto** leEntrada(int* count){
         Y = atof(token);
 
         ponto[i] = criaPonto(nome, X, Y, i);
+        if(nome) free(nome);
     }
 
-    free(linha);
+    if(linha) free(linha);
+    fclose(file);
     
     return ponto;
 }
@@ -60,5 +62,6 @@ int main(){
         destroiPonto (vetorPonto[i]);
     }
     free(count);
+    free(vetorPonto);
     return 0;
 }
