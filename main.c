@@ -1,8 +1,8 @@
-#include "ponto.h"
-#include "arestas.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "ponto.h"
+#include "arestas.h"
 
 Ponto** leEntrada(int* count){
 
@@ -51,14 +51,12 @@ Ponto** leEntrada(int* count){
     return ponto;
 }
 
-
 int main(){
 
     int i, count = 0;
     Ponto** vetorPonto = leEntrada(&count);
     printf("Distancia entre os dois primeiros pontos eh: %Lf\n\n", distanciaEuclidiana(vetorPonto[1], vetorPonto[0]));
     Arestas* arestas = criaArestas(vetorPonto, count);
-
 
     for(i = 0; i < count; i++){
         printf("%s, %Lf, %Lf, %d\n", retornaNome(vetorPonto[i]), retornaX(vetorPonto[i]), retornaY(vetorPonto[i]), retornaIndex(vetorPonto[i]));
