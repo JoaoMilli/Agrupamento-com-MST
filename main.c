@@ -3,10 +3,11 @@
 #include <string.h>
 #include "ponto.h"
 #include "arestas.h"
+#include "UnionFind.h"
 
 Ponto** leEntrada(int* count){
 
-    FILE* file = fopen("entrada.txt", "r");
+    FILE* file = fopen("1entrada.txt", "r");
     if (file == NULL){
         printf("Arquivo de entrada não encontrado\n");
         return NULL;
@@ -58,8 +59,16 @@ int main(){
     printf("Distancia entre os dois primeiros pontos eh: %Lf\n\n", distanciaEuclidiana(vetorPonto[1], vetorPonto[0]));
     Arestas* arestas = criaArestas(vetorPonto, count);
 
+
+    Ponto* teste1 = UF_find(vetorPonto, 3);
+    Ponto* teste2 = UF_find(vetorPonto, 5);
+    imprimePonto(teste1);
+    imprimePonto(teste2);
+
+    UF_Union(vetorPonto, count, teste1, teste2);
+
     for(i = 0; i < count; i++){
-        printf("%s, %Lf, %Lf, %d\n", retornaNome(vetorPonto[i]), retornaX(vetorPonto[i]), retornaY(vetorPonto[i]), retornaIndex(vetorPonto[i]));
+        imprimePonto(vetorPonto[i]);
         destroiPonto (vetorPonto[i]);
     }
 
