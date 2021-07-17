@@ -17,7 +17,7 @@ Ponto* criaPonto (char* nome, long double X, long double Y, int index){
     ponto->nome = strdup(nome);
     ponto->X = X;
     ponto->Y = Y;
-    ponto->index = index;
+    ponto->index = index; // Número que representa o ponto (como um código)
     ponto->ID = index;
     return ponto;
 }
@@ -55,6 +55,10 @@ void imprimePonto(Ponto* ponto){
 }
 
 void destroiPonto (Ponto* ponto){
-    free(ponto -> nome);
-    free(ponto);
+    if(ponto){
+        if(ponto->nome){
+            free(ponto -> nome);
+        }
+        free(ponto);
+    }
 }
