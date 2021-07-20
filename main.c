@@ -3,11 +3,11 @@
 #include <string.h>
 #include "ponto.h"
 #include "arestas.h"
-#include "UnionFind.h"
+#include "grupos.h"
 
 Ponto** leEntrada(int* count){
 
-    FILE* file = fopen("1entrada.txt", "r");
+    FILE* file = fopen("entrada.txt", "r");
     if (file == NULL){
         printf("Arquivo de entrada não encontrado\n");
         return NULL;
@@ -22,7 +22,7 @@ Ponto** leEntrada(int* count){
     /*Conta o numero de linhas contidas no arquivo de entrada, necessario para alocacao de espaco para o vetor contendo os ponteiros do tipo ponto*/
     while (getline (&linha, &buffer, file) != -1) (*count)++; 
 
-    Ponto** ponto = malloc(sizeof(Ponto*) * (*count));
+    Ponto** pontos = malloc(sizeof(Ponto*) * (*count));
 
     /*Reseta o ponteiro de leitura para o incio do arquivo de entrada, para agora obter os dados*/
     fseek(file, 0, SEEK_SET);
@@ -42,37 +42,47 @@ Ponto** leEntrada(int* count){
         token = strtok(NULL, ",\n");
         Y = atof(token);
 
-        ponto[i] = criaPonto(nome, X, Y, i);
+        pontos[i] = criaPonto(nome, X, Y, i);
         if(nome) free(nome);
     }
 
     if(linha) free(linha);
     fclose(file);
     
-    return ponto;
+    return pontos;
 }
 
 int main(){
 
     int i, count = 0;
-    Ponto** vetorPonto = leEntrada(&count);
-    printf("Distancia entre os dois primeiros pontos eh: %Lf\n\n", distanciaEuclidiana(vetorPonto[1], vetorPonto[0]));
-    Arestas* arestas = criaArestas(vetorPonto, count);
+    Ponto** pontos = leEntrada(&count);
+    Grupos* grupos = inicializaGrupos(pontos, count);
+    printf("%d\n", retornaNumeroPontos(grupos));
+    printf("Distancia entre os dois primeiros pontos eh: %Lf\n\n", distanciaEuclidiana(retornaPontoPorIndex(grupos, 1), retornaPontoPorIndex(grupos, 0)));
+    Arestas* arestas = criaArestas(grupos);
 
 
-    Ponto* teste1 = UF_find(vetorPonto, 3);
-    Ponto* teste2 = UF_find(vetorPonto, 5);
+    ///////////////// Teste do union find
+
+    Ponto* teste1 = UF_Find(grupos, 0);
+    Ponto* teste2 = UF_Find(grupos, 1);
     imprimePonto(teste1);
     imprimePonto(teste2);
 
-    UF_Union(vetorPonto, count, teste1, teste2);
+    UF_Union(grupos, teste1, teste2);
+    UF_Union(grupos, retornaPontoPorIndex(grupos, 2), teste2);
 
+    UF_Union(grupos, retornaPontoPorIndex(grupos, 3), retornaPontoPorIndex(grupos, 4));
+    UF_Union(grupos, retornaPontoPorIndex(grupos, 4), retornaPontoPorIndex(grupos, 0));
+
+    printf("------\nTodos os pontos:\n");
     for(i = 0; i < count; i++){
-        imprimePonto(vetorPonto[i]);
-        destroiPonto (vetorPonto[i]);
+        imprimePonto(retornaPontoPorIndex(grupos, i));
     }
 
+
+    //Liberar a memória
     destroiArestas(arestas);
-    free(vetorPonto);
+    destroiGrupos(grupos);
     return 0;
 }

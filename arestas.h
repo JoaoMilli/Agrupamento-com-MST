@@ -1,5 +1,6 @@
 #ifndef ARESTAS_H
 #define ARESTAS_H
+#include "grupos.h"
 #include "ponto.h"
 
 /* Tipo opaco; Struct arestas
@@ -13,7 +14,7 @@ typedef struct arestas Arestas;
 * Saídas: Um ponteiro para o TAD criado, com o tamanho de todas as arestas já calculado
 * Pós-condições: É alocado na memória o TAD Arestas e todas as informações sobre as arestas
 */
-Arestas* criaArestas(Ponto** pontos, int numPontos);
+Arestas* criaArestas(Grupos* grupos);
 
 /* Remove a menor aresta ainda presente em "arestas"
 * Entradas: arestas - Ponteiro para o TAD com as arestas

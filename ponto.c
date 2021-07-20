@@ -8,8 +8,8 @@ struct ponto{
     char* nome;
     long double X;
     long double Y;
-    int index; 
-    int ID;
+    int index; //Posição do ponto no vetor
+    int groupID; //Identificador de outro ponto no mesmo grupo, mais próximo do root do grupo (o ponto que tem index = groupID)
 };
 
 Ponto* criaPonto (char* nome, long double X, long double Y, int index){
@@ -18,7 +18,7 @@ Ponto* criaPonto (char* nome, long double X, long double Y, int index){
     ponto->X = X;
     ponto->Y = Y;
     ponto->index = index; // Número que representa o ponto (como um código)
-    ponto->ID = index;
+    ponto->groupID = index;
     return ponto;
 }
 
@@ -43,11 +43,11 @@ long double distanciaEuclidiana(Ponto* p1, Ponto* p2){
 }
 
 int retornaID(Ponto* ponto){
-    return ponto->ID;
+    return ponto->groupID;
 }
 
-void mudaID(Ponto* ponto, int ID){
-    ponto->ID = ID;
+void mudaID(Ponto* ponto, int groupID){
+    ponto->groupID = groupID;
 }
 
 void imprimePonto(Ponto* ponto){

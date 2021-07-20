@@ -69,7 +69,7 @@ int retornaID(Ponto* ponto);
 * Pós-condições: Ponto com ID modificado
 */
 
-void mudaID(Ponto* ponto, int ID);
+void mudaID(Ponto* ponto, int groupID);
 
 /* Imprime dados do ponto (X, Y)
 * Entradas: Ponto a ser impresso
