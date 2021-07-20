@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "ponto.h"
+#include "grupos.h"
 #include "arestas.h"
+
 
 struct arestas {
     long double **matriz;
@@ -15,11 +17,11 @@ struct arestas {
 * Saídas: void;
 * Pós-condições: As posições da matriz em arestas são atualizadas com os valores das distâncias;
 */
-void calculaTodasArestas(Arestas* arestas, Ponto** pontos){
+void calculaTodasArestas(Arestas* arestas, Grupos* grupos){
     int i, j;
     for(i=0; i<arestas->numPontos; i++){
         for(j=0; j<i; j++){ //Vai até i, que é o número de colunas da linha i
-            arestas->matriz[i][j] = distanciaEuclidiana(pontos[i], pontos[j]);
+            arestas->matriz[i][j] = distanciaEuclidiana(retornaPontoPorIndex(grupos, i), retornaPontoPorIndex(grupos, j));
         }
     }
 }
@@ -37,16 +39,16 @@ void imprimeArestas(Arestas* arestas){
 
 ///////////// Funções Externas ////////////////
 
-Arestas* criaArestas(Ponto** pontos, int numPontos){
+Arestas* criaArestas(Grupos* grupos){
     Arestas* arestas = (Arestas*) malloc(sizeof(Arestas));
-    arestas->numPontos = numPontos;
-    arestas->matriz = (long double**) malloc(sizeof(long double*)*numPontos);
+    arestas->numPontos = retornaNumeroPontos(grupos);
+    arestas->matriz = (long double**) malloc(sizeof(long double*)*arestas->numPontos);
     int i;
-    for(i=0; i<numPontos; i++){
+    for(i=0; i<arestas->numPontos; i++){
         //Aloca uma "matriz trinagular", sendo que a primeira linha tem zero colunas, a segunda tem uma e assim em diante
         arestas->matriz[i] = (long double*) malloc(sizeof(long double)*(i));
     }
-    calculaTodasArestas(arestas, pontos);
+    calculaTodasArestas(arestas, grupos);
 
     return arestas;
 }
@@ -83,4 +85,6 @@ Arestas* destroiArestas(Arestas* arestas){
     }
     if(arestas->matriz) free(arestas->matriz);
     free(arestas);
+
+    return NULL;
 }
