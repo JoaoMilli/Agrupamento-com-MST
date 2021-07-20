@@ -4,37 +4,68 @@
 #include "grupos.h"
 #include "arestas.h"
 
+typedef struct aresta{
+    int indexPonto1;
+    int indexPonto2;
+    long double tamanho;
+}Aresta;
 
 struct arestas {
-    long double **matriz;
+    Aresta **vetorArestas;
     int numPontos;
+    int indiceMenorAresta; //Número que vai indicar o índice da próxima aresta a ser removida
 };
 
 ////////////// Funções internas /////////////////
 
-/* Preenche uma matriz triangular com as distâncias entre os pontos
-* Entradas: arestas - ponteiro para o TAD das arestas // pontos - Vetor com todos os pontos (vértices) do grafo;
-* Saídas: void;
-* Pós-condições: As posições da matriz em arestas são atualizadas com os valores das distâncias;
-*/
-void calculaTodasArestas(Arestas* arestas, Grupos* grupos){
-    int i, j;
-    for(i=0; i<arestas->numPontos; i++){
-        for(j=0; j<i; j++){ //Vai até i, que é o número de colunas da linha i
-            arestas->matriz[i][j] = distanciaEuclidiana(retornaPontoPorIndex(grupos, i), retornaPontoPorIndex(grupos, j));
-        }
-    }
-}
-
 ////////////// FUNÇÃO PARA TESTES //////////////
 void imprimeArestas(Arestas* arestas){
     int i, j;
+    for(i=0; i<(arestas->numPontos)*(arestas->numPontos - 1)/2; i++){ //Passa por todas as arestas
+        Aresta* aresta = arestas->vetorArestas[i];
+        printf("%d - %d / Tam - %Lf\n", aresta->indexPonto1, aresta->indexPonto2, aresta->tamanho);
+    }
+}
+
+
+int comparadorTamanho(const void *a, const void *b) {
+    //printf("Nulo\n");
+    
+    Aresta* a1 = *(Aresta**)a;
+    Aresta* b1 = *(Aresta**)b;
+
+    if(a1->tamanho < b1->tamanho){
+        return -1;
+    } else if(a1->tamanho == b1->tamanho) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+
+/* Preenche um vetor de arestas com as distâncias entre os pontos
+* Entradas: arestas - ponteiro para o TAD das arestas // grupos - Struct que contém um vetor com todos os pontos (vértices) do grafo;
+* Saídas: void;
+* Pós-condições: As posições do vetorArestas em arestas são atualizadas com os as arestas;
+*/
+void calculaTodasArestas(Arestas* arestas, Grupos* grupos){
+    int i, j, indice = 0;
     for(i=0; i<arestas->numPontos; i++){
         for(j=0; j<i; j++){ //Vai até i, que é o número de colunas da linha i
-            printf("%Lf ", arestas->matriz[i][j]);
+            //Cria uma aresta entre o ponto i e o ponto j
+            Aresta *aresta = (Aresta*) malloc(sizeof(Aresta));
+            aresta->indexPonto1 = i;
+            aresta->indexPonto2 = j;
+            aresta->tamanho = distanciaEuclidiana(retornaPontoPorIndex(grupos, i), retornaPontoPorIndex(grupos, j));
+            
+            arestas->vetorArestas[indice] = aresta;
+            indice++;
         }
-        printf("\n");
     }
+
+    int numArestas = arestas->numPontos*(arestas->numPontos - 1)/2;
+    qsort(arestas->vetorArestas, numArestas, sizeof(Aresta*), comparadorTamanho);
 }
 
 ///////////// Funções Externas ////////////////
@@ -42,48 +73,36 @@ void imprimeArestas(Arestas* arestas){
 Arestas* criaArestas(Grupos* grupos){
     Arestas* arestas = (Arestas*) malloc(sizeof(Arestas));
     arestas->numPontos = retornaNumeroPontos(grupos);
-    arestas->matriz = (long double**) malloc(sizeof(long double*)*arestas->numPontos);
-    int i;
-    for(i=0; i<arestas->numPontos; i++){
-        //Aloca uma "matriz trinagular", sendo que a primeira linha tem zero colunas, a segunda tem uma e assim em diante
-        arestas->matriz[i] = (long double*) malloc(sizeof(long double)*(i));
-    }
+    arestas->indiceMenorAresta = 0;
+    arestas->vetorArestas = (Aresta**) malloc(sizeof(Aresta*) * (arestas->numPontos)*(arestas->numPontos - 1)/2);
+    
     calculaTodasArestas(arestas, grupos);
 
     return arestas;
 }
 
 void removeMenorAresta(Arestas* arestas, int *id_vertice_1, int *id_vertice_2){
-    //Busca a menor aresta
-    int i, j;
-    long double aresta, menorAresta=-1.0;
-    for(i=0; i<arestas->numPontos; i++){
-        for(j=0; j<i; j++){ //Vai até i, que é o número de colunas da linha i
-            aresta = arestas->matriz[i][j];
-            if(aresta != -1.0){
-                if(menorAresta == -1.0){
-                    menorAresta = aresta;
-                    *id_vertice_1 = i;
-                    *id_vertice_2 = j;
-                } else if(aresta < menorAresta){
-                    menorAresta = aresta;
-                    *id_vertice_1 = i;
-                    *id_vertice_2 = j;
-                }
-            }
-        }
+    if(arestas->indiceMenorAresta >= (arestas->numPontos*(arestas->numPontos - 1)/2) - 1) {
+        printf("Erro ao tentar remover aresta fora do vetor!\n");
+        return;
     }
-    //Marca a menor aresta como removida
-    arestas->matriz[*id_vertice_1][*id_vertice_2] = -1.0;
+
+    //Informa quais os vertices que compõem a menor aresta
+    Aresta *menorAresta = arestas->vetorArestas[arestas->indiceMenorAresta];
+    *id_vertice_1 = menorAresta->indexPonto1;
+    *id_vertice_2 = menorAresta->indexPonto2;
+
+    //Incrementa o contador para a próxima menor aresta
+    arestas->indiceMenorAresta = arestas->indiceMenorAresta + 1;
 }
 
 Arestas* destroiArestas(Arestas* arestas){
     int i;
-    for(i=0; i<arestas->numPontos; i++){
-        //Aloca uma "matriz trinagular", sendo que a primeira linha tem uma coluna, a segunda tem duas e assim em diante
-        if(arestas->matriz[i]) free(arestas->matriz[i]);
+    for(i=0; i < (arestas->numPontos)*(arestas->numPontos - 1)/2 ; i++){
+        free(arestas->vetorArestas[i]);
     }
-    if(arestas->matriz) free(arestas->matriz);
+
+    free(arestas->vetorArestas);
     free(arestas);
 
     return NULL;

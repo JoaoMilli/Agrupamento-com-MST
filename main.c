@@ -5,9 +5,9 @@
 #include "arestas.h"
 #include "grupos.h"
 
-Ponto** leEntrada(int* count){
+Ponto** leEntrada(char* entrada, int* count){
 
-    FILE* file = fopen("entrada.txt", "r");
+    FILE* file = fopen(entrada, "r");
     if (file == NULL){
         printf("Arquivo de entrada não encontrado\n");
         return NULL;
@@ -52,28 +52,51 @@ Ponto** leEntrada(int* count){
     return pontos;
 }
 
-int main(){
+/*algorithm Kruskal(G) is
+    F:= ∅
+    for each v ∈ G.V do
+        MAKE-SET(v)
+    for each (u, v) in G.E ordered by weight(u, v), increasing do
+        if FIND-SET(u) ≠ FIND-SET(v) then
+            F:= F ∪ {(u, v)} ∪ {(v, u)}
+            UNION(FIND-SET(u), FIND-SET(v))
+    return F*/
+
+void Kruskal (Grupos* grupos, int k){
+    Arestas* arestas = criaArestas(grupos);
+    int numeroArvores = retornaNumeroPontos(grupos), idVertice1, idVertice2;
+    
+    while(numeroArvores > k){
+        removeMenorAresta(arestas, &idVertice1, &idVertice2);
+        
+        if (UF_Find(grupos, idVertice1) != UF_Find(grupos, idVertice2)){
+            UF_Union(grupos, retornaPontoPorIndex(grupos, idVertice1), retornaPontoPorIndex(grupos, idVertice2));
+            
+            numeroArvores--;
+        }
+    }
+
+    destroiArestas(arestas);
+}
+
+int main(int argc, char** argv){
+
+    char *entrada, *saida;
+    entrada = argv[1];
+    saida = argv[3];
+    
+    int k = atoi(argv[2]);
 
     int i, count = 0;
-    Ponto** pontos = leEntrada(&count);
+    Ponto** pontos = leEntrada(entrada, &count);
     Grupos* grupos = inicializaGrupos(pontos, count);
-    printf("%d\n", retornaNumeroPontos(grupos));
-    printf("Distancia entre os dois primeiros pontos eh: %Lf\n\n", distanciaEuclidiana(retornaPontoPorIndex(grupos, 1), retornaPontoPorIndex(grupos, 0)));
-    Arestas* arestas = criaArestas(grupos);
 
+    Kruskal(grupos, k);
+    
+    ////////testes/////////
+    //printf("%d\n", retornaNumeroPontos(grupos));
+    //printf("Distancia entre os dois primeiros pontos eh: %Lf\n\n", distanciaEuclidiana(retornaPontoPorIndex(grupos, 1), retornaPontoPorIndex(grupos, 0)));
 
-    ///////////////// Teste do union find
-
-    Ponto* teste1 = UF_Find(grupos, 0);
-    Ponto* teste2 = UF_Find(grupos, 1);
-    imprimePonto(teste1);
-    imprimePonto(teste2);
-
-    UF_Union(grupos, teste1, teste2);
-    UF_Union(grupos, retornaPontoPorIndex(grupos, 2), teste2);
-
-    UF_Union(grupos, retornaPontoPorIndex(grupos, 3), retornaPontoPorIndex(grupos, 4));
-    UF_Union(grupos, retornaPontoPorIndex(grupos, 4), retornaPontoPorIndex(grupos, 0));
 
     printf("------\nTodos os pontos:\n");
     for(i = 0; i < count; i++){
@@ -82,7 +105,6 @@ int main(){
 
 
     //Liberar a memória
-    destroiArestas(arestas);
     destroiGrupos(grupos);
     return 0;
 }
