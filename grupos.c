@@ -74,6 +74,9 @@ int retornaNumeroPontos(Grupos* grupos){
     return grupos->numeroDePontos;
 }
 
+int* retornaTamanhoGrupos(Grupos* grupos){
+    return grupos->tamanhoGrupos;
+}
 
 Grupos* destroiGrupos(Grupos *grupos){
     if(!grupos) return NULL;

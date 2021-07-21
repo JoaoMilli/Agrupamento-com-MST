@@ -5,6 +5,69 @@
 #include "arestas.h"
 #include "grupos.h"
 
+
+
+void imprimeSaida(Grupos* grupos, int k){
+    
+    Ponto ***pGrupos; // k vetores de ponteiros para ponto, cada k representa um grupo
+    Ponto **Copia = malloc(sizeof(Ponto*) * retornaNumeroPontos(grupos)); // Vetor de ponteiros para ponto que conterá a cópia do endereço de todos os pontos
+    int ID, i, j=0, index, tamanho;
+
+    /*Preenche o vetor Copia com os endereços de todos os pontos*/
+    for (i = 0; i<retornaNumeroPontos(grupos); i++){
+        Copia[i] = retornaPontoPorIndex(grupos, i);
+    }
+
+    /*Obtém-se o vetor contendo os tamanhos dos grupos*/
+    int* tamanhoGrupos = retornaTamanhoGrupos(grupos);
+
+    /*Aloca espaço para os k grupos*/
+    pGrupos = malloc(sizeof(Ponto**)*k);
+
+    for (i = 0; i<k; i++){
+        index = 0;
+        /*Os endereços do vetor Copia são removidos quando já analisados*/
+        while(Copia[j] == NULL) j++;
+
+        /*Obtém-se o ID do próximo grupo a ser analisado*/
+        ID = retornaID(retornaPontoPorIndex(grupos,j));
+
+        /*Obtém-se o tamanho do grupo para alocação de memória*/
+        tamanho = tamanhoGrupos[ID];
+        pGrupos[i] = malloc(sizeof(Ponto*) * tamanho);
+
+        /*Preenche o vetor alocado com os pontos de mesma ID*/
+        for(int l=0; l<retornaNumeroPontos(grupos); l++){
+            if (ID == retornaID(retornaPontoPorIndex(grupos,l))){
+                tamanho--;
+                pGrupos[i][index] = retornaPontoPorIndex(grupos,l);
+                index++;
+                Copia[l] = NULL;
+                if (tamanho < 1) break;
+            }
+        }
+    }
+
+    free(Copia);
+
+    /*Imprime os pontos de cada grupo, separados por \n*/
+    for (i = 0; i<k; i++){
+        ID = retornaID(pGrupos[i][0]);
+        tamanho = tamanhoGrupos[ID];
+        for(j = 0; j<tamanho; j++){
+            printf("%s",retornaNome(pGrupos[i][j]));
+            if (j<tamanho-1) printf(",");
+        }
+        printf("\n");
+    }
+    
+    for (i = 0; i<k; i++){
+        free(pGrupos[i]);
+    }
+
+    free(pGrupos);
+}
+
 Ponto** leEntrada(char* entrada, int* count){
 
     FILE* file = fopen(entrada, "r");
@@ -103,6 +166,7 @@ int main(int argc, char** argv){
         imprimePonto(retornaPontoPorIndex(grupos, i));
     }
 
+    imprimeSaida(grupos, k);
 
     //Liberar a memória
     destroiGrupos(grupos);

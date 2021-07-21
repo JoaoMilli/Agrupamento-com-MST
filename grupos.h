@@ -12,6 +12,8 @@ void UF_Union(Grupos* grupos, Ponto* p1, Ponto* p2);
 Ponto* retornaPontoPorIndex(Grupos* grupos, int index);
 int retornaNumeroPontos(Grupos* grupos);
 
+int* retornaTamanhoGrupos(Grupos* grupos);
+
 Grupos* destroiGrupos(Grupos *grupos);
 
 
