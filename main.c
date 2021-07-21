@@ -5,7 +5,63 @@
 #include "arestas.h"
 #include "grupos.h"
 
+void merge(Ponto** pontos, int lo, int m, int hi) {
 
+    int i, j, k;
+    int n1 = m - lo + 1;
+    int n2 = hi - m;
+
+    // Cria vetores de ponteiros para ponto auxiliares, um para cada metade do vetor
+
+    Ponto** L = malloc(sizeof(Ponto*) * n1);
+    Ponto** R = malloc(sizeof(Ponto*) * n2);
+
+    // Copia os dados de cada metade do vetor pontos para o auxiliar correspondente
+    for (i = 0; i < n1; i++) L[i] = pontos[lo + i];
+    for (j = 0; j < n2; j++) R[j] = pontos[m + 1+ j];
+
+    // Merge os vetores auxiliares
+    i = 0;
+    j = 0;
+    k = lo;
+    while (i < n1 && j < n2) {
+        if (strcmp(retornaNome(L[i]), retornaNome(R[j])) <= 0) {
+            pontos[k] = L[i];
+            i++;
+        }
+        else {
+            pontos[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+    // Copia os elementos restantes de L
+    while (i < n1) {
+        pontos[k] = L[i];
+        i++;
+        k++;
+    }
+    // Copia os elementos restantes de R
+    while (j < n2) {
+        pontos[k] = R[j];
+        j++;
+        k++;
+    }
+    free(L);
+    free(R);
+}
+
+
+void mergeSort(Ponto** pontos, int lo, int hi) {
+
+    /*Aplicação do algoritmo mergeSort recursivo visto em aula*/
+    if (lo < hi) {
+        int m = lo+(hi-lo)/2;
+        mergeSort(pontos, lo, m);
+        mergeSort(pontos, m+1, hi);
+        merge(pontos, lo, m, hi);
+    }
+}
 
 void imprimeSaida(Grupos* grupos, int k){
     
@@ -52,8 +108,10 @@ void imprimeSaida(Grupos* grupos, int k){
 
     /*Imprime os pontos de cada grupo, separados por \n*/
     for (i = 0; i<k; i++){
+
         ID = retornaID(pGrupos[i][0]);
         tamanho = tamanhoGrupos[ID];
+        mergeSort(pGrupos[i], 0, tamanho-1);
         for(j = 0; j<tamanho; j++){
             printf("%s",retornaNome(pGrupos[i][j]));
             if (j<tamanho-1) printf(",");
@@ -154,6 +212,11 @@ int main(int argc, char** argv){
     Ponto** pontos = leEntrada(entrada, &count);
     Grupos* grupos = inicializaGrupos(pontos, count);
 
+    printf("------\nTodos os pontos:\n");
+    for(i = 0; i < count; i++){
+        imprimePonto(retornaPontoPorIndex(grupos, i));
+    }
+
     Kruskal(grupos, k);
     
     ////////testes/////////
@@ -166,6 +229,7 @@ int main(int argc, char** argv){
         imprimePonto(retornaPontoPorIndex(grupos, i));
     }
 
+    printf("\n\n");
     imprimeSaida(grupos, k);
 
     //Liberar a memória
