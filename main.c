@@ -69,9 +69,17 @@ void imprimeSaida(Grupos* grupos, int k){
     Ponto **Copia = malloc(sizeof(Ponto*) * retornaNumeroPontos(grupos)); // Vetor de ponteiros para ponto que conterá a cópia do endereço de todos os pontos
     int ID, i, j=0, index, tamanho;
 
+
+
+
     /*Preenche o vetor Copia com os endereços de todos os pontos*/
     for (i = 0; i<retornaNumeroPontos(grupos); i++){
         Copia[i] = retornaPontoPorIndex(grupos, i);
+
+        /*faz com que cada ponto tenha o ID da raíz*/
+        while (retornaID(retornaPontoPorIndex(grupos, retornaID(Copia[i]))) != retornaIndex(retornaPontoPorIndex(grupos, retornaID(Copia[i])))){
+            mudaID(Copia[i], retornaID(retornaPontoPorIndex(grupos, retornaID(Copia[i]))));
+        }
     }
 
     /*Obtém-se o vetor contendo os tamanhos dos grupos*/
