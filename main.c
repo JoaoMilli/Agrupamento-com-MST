@@ -63,15 +63,16 @@ void mergeSort(Ponto** pontos, int lo, int hi) {
     }
 }
 
-void imprimeSaida(Grupos* grupos, int k){
+void imprimeSaida(Grupos* grupos, int k, char* saida){
     
+    FILE *file = fopen(saida, "w");
     Ponto ***pGrupos; // k vetores de ponteiros para ponto, cada k representa um grupo
     Ponto **Copia = malloc(sizeof(Ponto*) * retornaNumeroPontos(grupos)); // Vetor de ponteiros para ponto que conterá a cópia do endereço de todos os pontos
     int ID, i, j=0, index, tamanho;
 
 
 
-
+    fclose(file);
     /*Preenche o vetor Copia com os endereços de todos os pontos*/
     for (i = 0; i<retornaNumeroPontos(grupos); i++){
         Copia[i] = retornaPontoPorIndex(grupos, i);
@@ -98,34 +99,40 @@ void imprimeSaida(Grupos* grupos, int k){
 
         /*Obtém-se o tamanho do grupo para alocação de memória*/
         tamanho = tamanhoGrupos[ID];
+        int aux_tamanho = tamanho;
         pGrupos[i] = malloc(sizeof(Ponto*) * tamanho);
 
         /*Preenche o vetor alocado com os pontos de mesma ID*/
         for(int l=0; l<retornaNumeroPontos(grupos); l++){
             if (ID == retornaID(retornaPontoPorIndex(grupos,l))){
-                tamanho--;
+                aux_tamanho--;
                 pGrupos[i][index] = retornaPontoPorIndex(grupos,l);
                 index++;
                 Copia[l] = NULL;
-                if (tamanho < 1) break;
+
+                
+                if (aux_tamanho < 1){
+
+                    /*Apos preencher o vetor com pontos de mesma ID, ordena o mesmo e imprime os grupos na saida*/
+                    mergeSort(pGrupos[i], 0, tamanho-1);
+
+                    file = fopen(saida, "a");
+
+                    for(j = 0; j<tamanho; j++){
+                        fprintf(file, "%s",retornaNome(pGrupos[i][j]));
+                        if (j<tamanho-1) fprintf(file, ",");
+                    }
+                    fprintf(file, "\n");
+
+                    fclose(file);
+                    j=0;
+                    break;
+                } 
             }
         }
     }
 
     free(Copia);
-
-    /*Imprime os pontos de cada grupo, separados por \n*/
-    for (i = 0; i<k; i++){
-
-        ID = retornaID(pGrupos[i][0]);
-        tamanho = tamanhoGrupos[ID];
-        mergeSort(pGrupos[i], 0, tamanho-1);
-        for(j = 0; j<tamanho; j++){
-            printf("%s",retornaNome(pGrupos[i][j]));
-            if (j<tamanho-1) printf(",");
-        }
-        printf("\n");
-    }
     
     for (i = 0; i<k; i++){
         free(pGrupos[i]);
@@ -238,7 +245,7 @@ int main(int argc, char** argv){
     }
 
     printf("\n\n");
-    imprimeSaida(grupos, k);
+    imprimeSaida(grupos, k, saida);
 
     //Liberar a memória
     destroiGrupos(grupos);
