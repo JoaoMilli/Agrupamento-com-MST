@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "ponto.h"
 #include "grupos.h"
 #include "arestas.h"
@@ -27,7 +28,6 @@ void imprimeArestas(Arestas* arestas){
     }
 }
 
-
 int comparadorTamanho(const void *a, const void *b) {
     //printf("Nulo\n");
     
@@ -50,6 +50,7 @@ int comparadorTamanho(const void *a, const void *b) {
 * Pós-condições: As posições do vetorArestas em arestas são atualizadas com os as arestas;
 */
 void calculaTodasArestas(Arestas* arestas, Grupos* grupos){
+    
     int i, j, indice = 0;
     for(i=0; i<arestas->numPontos; i++){
         for(j=0; j<i; j++){ //Vai até i, que é o número de colunas da linha i

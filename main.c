@@ -1,9 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "ponto.h"
 #include "arestas.h"
 #include "grupos.h"
+
+
+int comparadorPrimeiraLetra(const void *a, const void *b) {
+    //Verifica se são entradas válidas
+    if(!(Ponto**)a || !(Ponto**)b){
+        printf("Erro na comparação!");
+        return 0;
+    }
+    
+    //Pega o primeiro elemento dos grupos a serem comparados
+    Ponto* a1 = ((Ponto**)a)[0];
+    Ponto* b1 = ((Ponto**)b)[0];
+
+    //Compara os nomes dos primeiros elementos
+    return strcmp(retornaNome(a1), retornaNome(b1));
+}
 
 void merge(Ponto** pontos, int lo, int m, int hi) {
 
@@ -70,17 +87,10 @@ void imprimeSaida(Grupos* grupos, int k, char* saida){
     Ponto **Copia = malloc(sizeof(Ponto*) * retornaNumeroPontos(grupos)); // Vetor de ponteiros para ponto que conterá a cópia do endereço de todos os pontos
     int ID, i, j=0, index, tamanho;
 
-
-
     fclose(file);
     /*Preenche o vetor Copia com os endereços de todos os pontos*/
     for (i = 0; i<retornaNumeroPontos(grupos); i++){
         Copia[i] = retornaPontoPorIndex(grupos, i);
-
-        /*faz com que cada ponto tenha o ID da raíz*/
-        while (retornaID(retornaPontoPorIndex(grupos, retornaID(Copia[i]))) != retornaIndex(retornaPontoPorIndex(grupos, retornaID(Copia[i])))){
-            mudaID(Copia[i], retornaID(retornaPontoPorIndex(grupos, retornaID(Copia[i]))));
-        }
     }
 
     /*Obtém-se o vetor contendo os tamanhos dos grupos*/
@@ -89,48 +99,56 @@ void imprimeSaida(Grupos* grupos, int k, char* saida){
     /*Aloca espaço para os k grupos*/
     pGrupos = malloc(sizeof(Ponto**)*k);
 
+    /*Passa por todos os k grupos*/
     for (i = 0; i<k; i++){
         index = 0;
         /*Os endereços do vetor Copia são removidos quando já analisados*/
         while(Copia[j] == NULL) j++;
 
         /*Obtém-se o ID do próximo grupo a ser analisado*/
-        ID = retornaID(retornaPontoPorIndex(grupos,j));
+        ID = retornaID(UF_Find(grupos,j));
 
         /*Obtém-se o tamanho do grupo para alocação de memória*/
         tamanho = tamanhoGrupos[ID];
         int aux_tamanho = tamanho;
         pGrupos[i] = malloc(sizeof(Ponto*) * tamanho);
 
-        /*Preenche o vetor alocado com os pontos de mesma ID*/
+        /*Preenche o vetor alocado com os pontos do mesmo grupo*/
         for(int l=0; l<retornaNumeroPontos(grupos); l++){
-            if (ID == retornaID(retornaPontoPorIndex(grupos,l))){
+            if (ID == retornaID(UF_Find(grupos,l))){
                 aux_tamanho--;
                 pGrupos[i][index] = retornaPontoPorIndex(grupos,l);
                 index++;
                 Copia[l] = NULL;
 
-                
                 if (aux_tamanho < 1){
-
-                    /*Apos preencher o vetor com pontos de mesma ID, ordena o mesmo e imprime os grupos na saida*/
+                    /*Apos preencher o vetor com pontos do mesmo grupo, ordena o grupo por ordem alfabética*/
                     mergeSort(pGrupos[i], 0, tamanho-1);
 
-                    file = fopen(saida, "a");
-
-                    for(j = 0; j<tamanho; j++){
-                        fprintf(file, "%s",retornaNome(pGrupos[i][j]));
-                        if (j<tamanho-1) fprintf(file, ",");
-                    }
-                    fprintf(file, "\n");
-
-                    fclose(file);
                     j=0;
                     break;
                 } 
             }
         }
     }
+
+    /*Ordena os grupos pelo primeiro elemento de cada*/
+    qsort(pGrupos, k, sizeof(Ponto**), comparadorPrimeiraLetra);
+
+
+    /*Imprime os grupos na ordem certa*/
+    file = fopen(saida, "a");
+
+    for(i=0; i<k; i++){
+        for(j = 0; j<tamanho; j++){
+            fprintf(file, "%s",retornaNome(pGrupos[i][j]));
+            if (j<tamanho-1) fprintf(file, ",");
+        }
+        fprintf(file, "\n");
+    }
+    fclose(file);
+
+    /*Libera os recursos de memória utilizados na função*/
 
     free(Copia);
     
@@ -188,16 +206,6 @@ Ponto** leEntrada(char* entrada, int* count){
     return pontos;
 }
 
-/*algorithm Kruskal(G) is
-    F:= ∅
-    for each v ∈ G.V do
-        MAKE-SET(v)
-    for each (u, v) in G.E ordered by weight(u, v), increasing do
-        if FIND-SET(u) ≠ FIND-SET(v) then
-            F:= F ∪ {(u, v)} ∪ {(v, u)}
-            UNION(FIND-SET(u), FIND-SET(v))
-    return F*/
-
 void Kruskal (Grupos* grupos, int k){
     Arestas* arestas = criaArestas(grupos);
     int numeroArvores = retornaNumeroPontos(grupos), idVertice1, idVertice2;
@@ -217,14 +225,25 @@ void Kruskal (Grupos* grupos, int k){
 
 int main(int argc, char** argv){
 
+    /*clock_t start, stop;
+
+    start = clock();
+    //TUDO QUE FOR CONTAR NO TEMPO AQUI
+    stop = clock();
+
+    double time_taken = ((double) stop - start) / CLOCKS_PER_SEC;
+    printf("Elapsed time: %.3f\n", time_taken);
+    */
+
     char *entrada, *saida;
     entrada = argv[1];
     saida = argv[3];
     
     int k = atoi(argv[2]);
-
     int i, count = 0;
-    Ponto** pontos = leEntrada(entrada, &count);
+
+    Ponto** pontos = leEntrada(entrada, &count);                          
+    
     Grupos* grupos = inicializaGrupos(pontos, count);
 
     printf("------\nTodos os pontos:\n");
@@ -237,12 +256,10 @@ int main(int argc, char** argv){
     ////////testes/////////
     //printf("%d\n", retornaNumeroPontos(grupos));
     //printf("Distancia entre os dois primeiros pontos eh: %Lf\n\n", distanciaEuclidiana(retornaPontoPorIndex(grupos, 1), retornaPontoPorIndex(grupos, 0)));
-
-
-    printf("------\nTodos os pontos:\n");
-    for(i = 0; i < count; i++){
-        imprimePonto(retornaPontoPorIndex(grupos, i));
-    }
+    // printf("------\nTodos os pontos:\n");
+    // for(i = 0; i < count; i++){
+    //     imprimePonto(retornaPontoPorIndex(grupos, i));
+    // }
 
     printf("\n\n");
     imprimeSaida(grupos, k, saida);
