@@ -140,11 +140,14 @@ void imprimeSaida(Grupos* grupos, int k, char* saida){
     file = fopen(saida, "a");
 
     for(i=0; i<k; i++){
+        tamanho = tamanhoGrupos[retornaID(pGrupos[i][0])];
         for(j = 0; j<tamanho; j++){
             fprintf(file, "%s",retornaNome(pGrupos[i][j]));
             if (j<tamanho-1) fprintf(file, ",");
         }
-        fprintf(file, "\n");
+        if(i < k-1){
+            fprintf(file, "\n");
+        }
     }
     fclose(file);
 
@@ -235,6 +238,11 @@ int main(int argc, char** argv){
     printf("Elapsed time: %.3f\n", time_taken);
     */
 
+    if(argc < 4){
+        printf("Erro: São necessários 3 parâmetros para a execução: nome_arquivo_entrada.txt numero_de_grupos nome_arquivo_saida.txt");
+        return 1;
+    }
+
     char *entrada, *saida;
     entrada = argv[1];
     saida = argv[3];
@@ -242,26 +250,17 @@ int main(int argc, char** argv){
     int k = atoi(argv[2]);
     int i, count = 0;
 
+    //Le o arquivo de entrada e cria um vetor com todos os pontos
     Ponto** pontos = leEntrada(entrada, &count);                          
     
+    //Cria o TAD que contém todos os pontos e a qual grupo eles pertencem (Com os grupos inicialmente sendo apenas o ponto)
+    //Também calcula as distâncias entre os pontos e as ordena por tamanho
     Grupos* grupos = inicializaGrupos(pontos, count);
 
-    printf("------\nTodos os pontos:\n");
-    for(i = 0; i < count; i++){
-        imprimePonto(retornaPontoPorIndex(grupos, i));
-    }
-
+    //Baseado nas distâncias já calculadas, já encontra os k grupos por meio do algoritmo de Kruskal modificado para parar antes do final
     Kruskal(grupos, k);
     
-    ////////testes/////////
-    //printf("%d\n", retornaNumeroPontos(grupos));
-    //printf("Distancia entre os dois primeiros pontos eh: %Lf\n\n", distanciaEuclidiana(retornaPontoPorIndex(grupos, 1), retornaPontoPorIndex(grupos, 0)));
-    // printf("------\nTodos os pontos:\n");
-    // for(i = 0; i < count; i++){
-    //     imprimePonto(retornaPontoPorIndex(grupos, i));
-    // }
-
-    printf("\n\n");
+    //Ordena os grupos criados por ordem alfabética e os imprime no arquivo de texto passado
     imprimeSaida(grupos, k, saida);
 
     //Liberar a memória
