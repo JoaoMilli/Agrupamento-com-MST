@@ -246,14 +246,16 @@ Ponto** leEntrada(char* entrada, int* count){
         return NULL;
     }
 
-    size_t buffer = 100; //unsigned int contendo o tamanho da string que recebera as linhas da entrada (tipo padrao do getiline)
+    size_t buffer = 500; //unsigned int contendo o tamanho da string que recebera as linhas da entrada (tipo padrao do getiline)
     char* linha = malloc(sizeof(char)*buffer);
+    char* aux_linha = malloc(sizeof(char)*buffer);
     char* token = NULL;
     char* nome = NULL;
-    long double X, Y;
+    int countCoord = 0;
+    long double num;
 
     /*Conta o numero de linhas contidas no arquivo de entrada, necessario para alocacao de espaco para o vetor contendo os ponteiros do tipo ponto*/
-    while (getline (&linha, &buffer, file) != -1) (*count)++; 
+    while (getline (&aux_linha, &buffer, file) != -1) (*count)++; 
 
     Ponto** pontos = malloc(sizeof(Ponto*) * (*count));
 
@@ -264,21 +266,35 @@ Ponto** leEntrada(char* entrada, int* count){
 
         getline (&linha, &buffer, file);
 
+        strcpy(aux_linha, linha);
         /*Obtem-se cada elemento que eh separado por virgula*/
-        token = strtok(linha, ",");       
+        token = strtok(aux_linha, ",");    
 
         nome = strdup(token);
 
-        token = strtok(NULL, ",");
-        X = atof(token);
+        while (strtok(NULL, ",") != NULL) countCoord++;
+        
+        long double coord[countCoord];
+        token = strtok(linha, ",");
 
-        token = strtok(NULL, ",\n");
-        Y = atof(token);
+        for(int j=0; j<countCoord;j++){
+            if (j==countCoord-1){
 
-        pontos[i] = criaPonto(nome, X, Y, i);
+                token = strtok(NULL, ",\n");
+                coord[j] = atof(token);
+
+            }
+            else{
+                token = strtok(NULL, ",");
+                coord[j] = atof(token);
+            }
+        }
+
+        pontos[i] = criaPonto(nome, coord, i, countCoord);
+        countCoord = 0;
         if(nome) free(nome);
     }
-
+    if(aux_linha) free(aux_linha);
     if(linha) free(linha);
     fclose(file);
     

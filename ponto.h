@@ -11,7 +11,7 @@ typedef struct ponto Ponto;
 * Saídas: Ponto 
 * Pós-condições: Ponto existe no plano
 */
-Ponto* criaPonto (char* nome, long double  X, long double Y, int index);
+Ponto* criaPonto (char* nome, long double* coordenadas, int index, int nCoord);
 
 /* Retorna nome do ponto (X, Y)
 * Entradas: Ponto

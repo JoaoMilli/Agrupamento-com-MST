@@ -6,17 +6,20 @@
 
 struct ponto{
     char* nome;
-    long double X;
-    long double Y;
+    long double* coordenadas;
+    int nCoord;
     int index; //Posição do ponto no vetor
     int groupID; //Identificador de outro ponto no mesmo grupo, mais próximo do root do grupo (o ponto que tem index = groupID)
 };
 
-Ponto* criaPonto (char* nome, long double X, long double Y, int index){
+Ponto* criaPonto (char* nome, long double* coordenadas, int index, int nCoord){
     Ponto* ponto = malloc(sizeof(Ponto));
+    ponto->nCoord = nCoord;
+    ponto->coordenadas = malloc(sizeof(long double) * nCoord);
+    for(int i = 0; i<nCoord; i++){
+        ponto->coordenadas[i] = coordenadas[i];
+    }
     ponto->nome = strdup(nome);
-    ponto->X = X;
-    ponto->Y = Y;
     ponto->index = index; // Número que representa o ponto (como um código)
     ponto->groupID = index;
     return ponto;
@@ -26,20 +29,37 @@ char* retornaNome (Ponto* ponto){
     return ponto->nome;
 }
 
-long double retornaX (Ponto* ponto){
-    return ponto->X;
-}
-
-long double retornaY (Ponto* ponto){
-    return ponto->Y;
-}
-
 int retornaIndex(Ponto* ponto){
     return ponto->index;
 }
 
+int retornaNCoord(Ponto* ponto){
+    return ponto->nCoord;
+}
+
 long double distanciaEuclidiana(Ponto* p1, Ponto* p2){
-    return sqrt(pow(retornaX(p2) - retornaX(p1),2) + pow(retornaY(p2) - retornaY(p1),2));
+
+    Ponto* menornCoord, *maiornCoord;
+    int i;
+    long double distQuadradas = 0;
+
+    if (retornaNCoord(p1) > retornaNCoord(p2)){
+        menornCoord = p2;
+        maiornCoord = p1;
+    }
+    else {
+        menornCoord = p1;
+        maiornCoord = p2;
+    }
+
+    for (i=0; i<retornaNCoord(menornCoord); i++){
+        distQuadradas += pow(p1->coordenadas[i] - p2->coordenadas[i],2);
+    }
+    while(i < retornaNCoord(maiornCoord)){
+        distQuadradas += pow(maiornCoord->coordenadas[i],2);
+    }
+
+    return sqrt(distQuadradas);
 }
 
 int retornaID(Ponto* ponto){
@@ -50,14 +70,13 @@ void mudaID(Ponto* ponto, int groupID){
     ponto->groupID = groupID;
 }
 
-void imprimePonto(Ponto* ponto){
-    printf("%s, %Lf, %Lf, %d, %d\n", retornaNome(ponto), retornaX(ponto), retornaY(ponto), retornaIndex(ponto), retornaID(ponto));
-}
-
 void destroiPonto (Ponto* ponto){
     if(ponto){
         if(ponto->nome){
             free(ponto -> nome);
+        }
+        if(ponto->coordenadas){
+            free(ponto->coordenadas);
         }
         free(ponto);
     }
