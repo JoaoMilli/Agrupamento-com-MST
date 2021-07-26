@@ -9,6 +9,27 @@ struct grupos{
     int numeroDePontos;
 };
 
+
+///////////////////////////
+// Getters ////////////////
+///////////////////////////
+
+Ponto* retornaPontoPorIndex(Grupos* grupos, int index){
+    return grupos->vetorPontos[index];
+}
+int retornaNumeroPontos(Grupos* grupos){
+    return grupos->numeroDePontos;
+}
+int* retornaTamanhoGrupos(Grupos* grupos){
+    return grupos->tamanhoGrupos;
+}
+
+
+
+///////////////////////////
+// Controle do TAD grupos /
+///////////////////////////
+
 Grupos* inicializaGrupos(Ponto** vetorPontos, int numeroDePontos){
     Grupos *grupos = (Grupos*) malloc(sizeof(Grupos));
     grupos->numeroDePontos = numeroDePontos;
@@ -24,6 +45,30 @@ Grupos* inicializaGrupos(Ponto** vetorPontos, int numeroDePontos){
     return grupos;
 }
 
+Grupos* destroiGrupos(Grupos *grupos){
+    if(!grupos) return NULL;
+    int i;
+
+    //Libera todos os pontos
+    for(i = 0; i < grupos->numeroDePontos; i++){
+        destroiPonto(grupos->vetorPontos[i]);
+    }
+
+    //Libera os vetores alocados dinamicamente
+    free(grupos->tamanhoGrupos);
+    free(grupos->vetorPontos);
+
+    //Libera a struct
+    free(grupos);
+    
+    return NULL;
+}
+
+
+
+///////////////////////////
+// Union-Find /////////////
+///////////////////////////
 
 Ponto* UF_Find(Grupos* grupos, int index){
     Ponto** vetor = grupos->vetorPontos;
@@ -67,32 +112,4 @@ void UF_Union(Grupos* grupos, Ponto* p1, Ponto* p2){
 
 
 
-Ponto* retornaPontoPorIndex(Grupos* grupos, int index){
-    return grupos->vetorPontos[index];
-}
-int retornaNumeroPontos(Grupos* grupos){
-    return grupos->numeroDePontos;
-}
 
-int* retornaTamanhoGrupos(Grupos* grupos){
-    return grupos->tamanhoGrupos;
-}
-
-Grupos* destroiGrupos(Grupos *grupos){
-    if(!grupos) return NULL;
-    int i;
-
-    //Libera todos os pontos
-    for(i = 0; i < grupos->numeroDePontos; i++){
-        destroiPonto(grupos->vetorPontos[i]);
-    }
-
-    //Libera os vetores alocados dinamicamente
-    free(grupos->tamanhoGrupos);
-    free(grupos->vetorPontos);
-
-    //Libera a struct
-    free(grupos);
-    
-    return NULL;
-}

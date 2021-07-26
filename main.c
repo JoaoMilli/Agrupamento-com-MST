@@ -6,6 +6,79 @@
 #include "arestas.h"
 #include "grupos.h"
 
+//Comparador para o qsort entre os grupos de pontos
+int comparadorPrimeiraLetra(const void *a, const void *b);
+
+//Função de merge usada no merge sort para ordenar os pontos dentro de um grupo
+void merge(Ponto** pontos, int lo, int m, int hi);
+
+//Função para ordenar os pontos dentro de um grupo
+void mergeSort(Ponto** pontos, int lo, int hi);
+
+//Ordena os grupos e imprime no arquivo de caminho na string saida o resultado
+void imprimeSaida(Grupos* grupos, int k, char* saida);
+
+//Le o arquivo de entrada de caminho contido na string entrada e retorna um vetor com os pontos lidos
+Ponto** leEntrada(char* entrada, int* count);
+
+//Algoritmo de Kruscal adaptado para encontrar k grupos em vez de apenas uma MST
+void Kruskal (Grupos* grupos, int k);
+
+
+
+//////////////////////
+// Main //////////////
+//////////////////////
+
+int main(int argc, char** argv){
+
+    /*clock_t start, stop;
+
+    start = clock();
+    //TUDO QUE FOR CONTAR NO TEMPO AQUI
+    stop = clock();
+
+    double time_taken = ((double) stop - start) / CLOCKS_PER_SEC;
+    printf("Elapsed time: %.3f\n", time_taken);
+    */
+
+    if(argc < 4){
+        printf("Erro: São necessários 3 parâmetros para a execução: nome_arquivo_entrada.txt numero_de_grupos nome_arquivo_saida.txt");
+        return 1;
+    }
+
+    char *entrada, *saida;
+    entrada = argv[1];
+    saida = argv[3];
+    
+    int k = atoi(argv[2]);
+    int i, count = 0;
+
+    //Le o arquivo de entrada e cria um vetor com todos os pontos
+    Ponto** pontos = leEntrada(entrada, &count);                          
+    
+    //Cria o TAD que contém todos os pontos e a qual grupo eles pertencem (Com os grupos inicialmente sendo apenas o ponto)
+    //Também calcula as distâncias entre os pontos e as ordena por tamanho
+    Grupos* grupos = inicializaGrupos(pontos, count);
+
+    //Baseado nas distâncias já calculadas, já encontra os k grupos por meio do algoritmo de Kruskal modificado para parar antes do final
+    Kruskal(grupos, k);
+    
+    //Ordena os grupos criados por ordem alfabética e os imprime no arquivo de texto passado
+    imprimeSaida(grupos, k, saida);
+
+    //Liberar a memória
+    destroiGrupos(grupos);
+    return 0;
+}
+
+
+
+//////////////////////////////////////////////////
+//// Funções /////////////////////////////////////
+//////////////////////////////////////////////////
+
+
 
 int comparadorPrimeiraLetra(const void *a, const void *b) {
     //Verifica se são entradas válidas
@@ -21,6 +94,7 @@ int comparadorPrimeiraLetra(const void *a, const void *b) {
     //Compara os nomes dos primeiros elementos
     return strcmp(retornaNome(a1), retornaNome(b1));
 }
+
 
 void merge(Ponto** pontos, int lo, int m, int hi) {
 
@@ -79,6 +153,7 @@ void mergeSort(Ponto** pontos, int lo, int hi) {
         merge(pontos, lo, m, hi);
     }
 }
+
 
 void imprimeSaida(Grupos* grupos, int k, char* saida){
     
@@ -162,6 +237,7 @@ void imprimeSaida(Grupos* grupos, int k, char* saida){
     free(pGrupos);
 }
 
+
 Ponto** leEntrada(char* entrada, int* count){
 
     FILE* file = fopen(entrada, "r");
@@ -209,6 +285,7 @@ Ponto** leEntrada(char* entrada, int* count){
     return pontos;
 }
 
+
 void Kruskal (Grupos* grupos, int k){
     Arestas* arestas = criaArestas(grupos);
     int numeroArvores = retornaNumeroPontos(grupos), idVertice1, idVertice2;
@@ -224,46 +301,4 @@ void Kruskal (Grupos* grupos, int k){
     }
 
     destroiArestas(arestas);
-}
-
-int main(int argc, char** argv){
-
-    /*clock_t start, stop;
-
-    start = clock();
-    //TUDO QUE FOR CONTAR NO TEMPO AQUI
-    stop = clock();
-
-    double time_taken = ((double) stop - start) / CLOCKS_PER_SEC;
-    printf("Elapsed time: %.3f\n", time_taken);
-    */
-
-    if(argc < 4){
-        printf("Erro: São necessários 3 parâmetros para a execução: nome_arquivo_entrada.txt numero_de_grupos nome_arquivo_saida.txt");
-        return 1;
-    }
-
-    char *entrada, *saida;
-    entrada = argv[1];
-    saida = argv[3];
-    
-    int k = atoi(argv[2]);
-    int i, count = 0;
-
-    //Le o arquivo de entrada e cria um vetor com todos os pontos
-    Ponto** pontos = leEntrada(entrada, &count);                          
-    
-    //Cria o TAD que contém todos os pontos e a qual grupo eles pertencem (Com os grupos inicialmente sendo apenas o ponto)
-    //Também calcula as distâncias entre os pontos e as ordena por tamanho
-    Grupos* grupos = inicializaGrupos(pontos, count);
-
-    //Baseado nas distâncias já calculadas, já encontra os k grupos por meio do algoritmo de Kruskal modificado para parar antes do final
-    Kruskal(grupos, k);
-    
-    //Ordena os grupos criados por ordem alfabética e os imprime no arquivo de texto passado
-    imprimeSaida(grupos, k, saida);
-
-    //Liberar a memória
-    destroiGrupos(grupos);
-    return 0;
 }

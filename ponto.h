@@ -4,7 +4,6 @@
 /* Tipo opaco; Struct ponto
 * Informações do ponto (X, Y) no plano
 */
-
 typedef struct ponto Ponto;
 
 /* Inicializa um ponto (X, Y) no plano
@@ -12,7 +11,6 @@ typedef struct ponto Ponto;
 * Saídas: Ponto 
 * Pós-condições: Ponto existe no plano
 */
-
 Ponto* criaPonto (char* nome, long double  X, long double Y, int index);
 
 /* Retorna nome do ponto (X, Y)
@@ -20,7 +18,6 @@ Ponto* criaPonto (char* nome, long double  X, long double Y, int index);
 * Saídas: Nome do ponto
 * Pós-condições: -
 */
-
 char* retornaNome (Ponto* ponto);
 
 /* Retorna X do ponto (X, Y)
@@ -28,7 +25,6 @@ char* retornaNome (Ponto* ponto);
 * Saídas: X do ponto
 * Pós-condições: -
 */
-
 long double retornaX (Ponto* ponto);
 
 /* Retorna Y do ponto (X, Y)
@@ -36,7 +32,6 @@ long double retornaX (Ponto* ponto);
 * Saídas: Y do ponto
 * Pós-condições: -
 */
-
 long double retornaY (Ponto* ponto);
 
 /* Retorna índice do ponto (X, Y)
@@ -44,7 +39,6 @@ long double retornaY (Ponto* ponto);
 * Saídas: Índice do ponto   
 * Pós-condições: -
 */
-
 int retornaIndex(Ponto* ponto);
 
 /* Calcula a distância entre dois pontos no plano
@@ -52,7 +46,6 @@ int retornaIndex(Ponto* ponto);
 * Saídas: Distância euclidiana
 * Pós-condições: -
 */
-
 long double distanciaEuclidiana(Ponto* p1, Ponto* p2);
 
 /* Retorna o ID do ponto (X, Y)
@@ -60,7 +53,6 @@ long double distanciaEuclidiana(Ponto* p1, Ponto* p2);
 * Saídas: ID do ponto   
 * Pós-condições: -
 */
-
 int retornaID(Ponto* ponto);
 
 /* Muda o ID do ponto (X, Y)
@@ -68,7 +60,6 @@ int retornaID(Ponto* ponto);
 * Saídas: -
 * Pós-condições: Ponto com ID modificado
 */
-
 void mudaID(Ponto* ponto, int groupID);
 
 /* Imprime dados do ponto (X, Y)
@@ -76,7 +67,6 @@ void mudaID(Ponto* ponto, int groupID);
 * Saídas: Dados do ponto impressos
 * Pós-condições: -
 */
-
 void imprimePonto(Ponto* ponto);
 
 /* Libera a memória de um ponto 
@@ -84,7 +74,6 @@ void imprimePonto(Ponto* ponto);
 * Saídas: -
 * Pós-condições: Ponto não existe mais
 */
-
 void destroiPonto (Ponto* ponto);
 
 #endif /* PONTO_H */

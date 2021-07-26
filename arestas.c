@@ -19,15 +19,7 @@ struct arestas {
 
 ////////////// Funções internas /////////////////
 
-////////////// FUNÇÃO PARA TESTES //////////////
-void imprimeArestas(Arestas* arestas){
-    int i, j;
-    for(i=0; i<(arestas->numPontos)*(arestas->numPontos - 1)/2; i++){ //Passa por todas as arestas
-        Aresta* aresta = arestas->vetorArestas[i];
-        printf("%d - %d / Tam - %Lf\n", aresta->indexPonto1, aresta->indexPonto2, aresta->tamanho);
-    }
-}
-
+//Comparador para o qsort das arestas (distâncias entre os pontos)
 int comparadorTamanho(const void *a, const void *b) {
     //printf("Nulo\n");
     

@@ -10,7 +10,7 @@
 typedef struct arestas Arestas;
 
 /* Inicializa o TAD com informação sobre todas as arestas entre os pontos passados
-* Entradas: pontos - Vetor com todos os pontos (vértices) do grafo
+* Entradas: grupos - Struct que contém um vetor com todos os pontos (vértices) do grafo;
 * Saídas: Um ponteiro para o TAD criado, com o tamanho de todas as arestas já calculado
 * Pós-condições: É alocado na memória o TAD Arestas e todas as informações sobre as arestas
 */
