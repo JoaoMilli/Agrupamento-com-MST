@@ -43,6 +43,7 @@ long double distanciaEuclidiana(Ponto* p1, Ponto* p2){
     int i;
     long double distQuadradas = 0;
 
+    //Verificação caso algum ponto tenha mais dimensões do que outros
     if (retornaNCoord(p1) > retornaNCoord(p2)){
         menornCoord = p2;
         maiornCoord = p1;
@@ -55,8 +56,9 @@ long double distanciaEuclidiana(Ponto* p1, Ponto* p2){
     for (i=0; i<retornaNCoord(menornCoord); i++){
         distQuadradas += pow(p1->coordenadas[i] - p2->coordenadas[i],2);
     }
-    while(i < retornaNCoord(maiornCoord)){
+    while(i < retornaNCoord(maiornCoord)){ //Só soma o quadrado das dimensões a mais
         distQuadradas += pow(maiornCoord->coordenadas[i],2);
+        i++;
     }
 
     return sqrt(distQuadradas);

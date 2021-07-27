@@ -88,8 +88,8 @@ int comparadorPrimeiraLetra(const void *a, const void *b) {
     }
     
     //Pega o primeiro elemento dos grupos a serem comparados
-    Ponto* a1 = ((Ponto**)a)[0];
-    Ponto* b1 = ((Ponto**)b)[0];
+    Ponto* a1 = (*(Ponto***)a)[0];
+    Ponto* b1 = (*(Ponto***)b)[0];
 
     //Compara os nomes dos primeiros elementos
     return strcmp(retornaNome(a1), retornaNome(b1));
@@ -215,7 +215,7 @@ void imprimeSaida(Grupos* grupos, int k, char* saida){
     file = fopen(saida, "a");
 
     for(i=0; i<k; i++){
-        tamanho = tamanhoGrupos[retornaID(pGrupos[i][0])];
+        tamanho = tamanhoGrupos[retornaID(UF_Find(grupos, retornaIndex(pGrupos[i][0])))];
         for(j = 0; j<tamanho; j++){
             fprintf(file, "%s",retornaNome(pGrupos[i][j]));
             if (j<tamanho-1) fprintf(file, ",");
@@ -274,6 +274,7 @@ Ponto** leEntrada(char* entrada, int* count){
 
         while (strtok(NULL, ",") != NULL) countCoord++;
         
+
         long double coord[countCoord];
         token = strtok(linha, ",");
 
