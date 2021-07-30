@@ -1,6 +1,5 @@
 all:
 	make compilar
-	make valexecutar
 
 compilar: 
 	gcc -o trab1 *.c -lm 
