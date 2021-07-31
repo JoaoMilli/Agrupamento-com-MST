@@ -21,8 +21,6 @@ struct arestas {
 
 //Comparador para o qsort das arestas (distâncias entre os pontos)
 int comparadorTamanho(const void *a, const void *b) {
-    //printf("Nulo\n");
-    
     Aresta* a1 = *(Aresta**)a;
     Aresta* b1 = *(Aresta**)b;
 

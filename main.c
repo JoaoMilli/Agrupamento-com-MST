@@ -32,16 +32,6 @@ void Kruskal (Grupos* grupos, int k);
 
 int main(int argc, char** argv){
 
-    /*clock_t start, stop;
-
-    start = clock();
-    //TUDO QUE FOR CONTAR NO TEMPO AQUI
-    stop = clock();
-
-    double time_taken = ((double) stop - start) / CLOCKS_PER_SEC;
-    printf("Elapsed time: %.3f\n", time_taken);
-    */
-
     if(argc < 4){
         printf("Erro: São necessários 3 parâmetros para a execução: nome_arquivo_entrada.txt numero_de_grupos nome_arquivo_saida.txt");
         return 1;
